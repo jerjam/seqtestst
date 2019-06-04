@@ -1,36 +1,23 @@
 #!/bin/bash
 
-
+#1 - demo.i
 gcc -E -x c sncProgram.st >demo.i
 
-/home/jerzy/epics_env/epics-modules/seq/bin/linux-x86_64/snc +m demo.i
+#2 - demo.c
+${HOME}/epics_env/epics-modules/seq/bin/linux-x86_64/snc +m demo.i
 
-gcc -D_POSIX_C_SOURCE=199506L -D_POSIX_THREADS -D_REENTRANT \
--D__EXTENSIONS__ -DnoExceptionsFromCXX \
--DOSITHREAD_USE_DEFAULT_STACK \
--I. -I.. \
--I/usr/local/epics/seq/include \
--I/usr/local/epics/base/include \
--I/home/jerzy/epics_env/epics-modules/seq/include \
--I/home/jerzy/epics_env/epics-base/include \
--I/home/jerzy/epics_env/epics-base/include/compiler/gcc \
--I/home/jerzy/epics_env/epics-base/include/os/Linux \
+#3 - demo.o
+gcc -I. -I.. \
+-I${HOME}/epics_env/epics-modules/seq/include \
+-I${HOME}/epics_env/epics-base/include \
+-I${HOME}/epics_env/epics-base/include/compiler/gcc \
+-I${HOME}/epics_env/epics-base/include/os/Linux \
 -c demo.c
 
-
-#g++ -o demo \
-#demo.o -lseq -lpv -lpvCa -lca -lCom \
-#-lposix4 -lpthread -lthread -lsocket -lnsl -lm
-
-
-g++ -o demo \
--L/home/jerzy/epics_env/epics-modules/seq/lib/linux-x86_64 \
--L/home/jerzy/epics_env/epics-base/lib/linux-x86_64 \
-demo.o -lseq -lpv -lpvCa -lca -lCom \
--lposix4 -lpthread -lthread -lsocket -lnsl -lm
-
-#g++ -o demo \
-#-L/home/jerzy/epics_env/epics-modules/seq/lib/linux-x86_64 \
-#-L/home/jerzy/epics_env/epics-base/lib/linux-x86_64 \
-#demo.o -lseq -lpv -lca -lCom \
-#-lpthread -lthread -lsocket -lnsl -lm
+#4 - demo
+g++ -o demo demo.o -rdynamic -m64 \
+-L${HOME}/epics_env/epics-base/lib/linux-x86_64 \
+-L${HOME}/epics_env/epics-modules/seq/lib/linux-x86_64 \
+-Wl,-rpath,${HOME}/epics_env/epics-base/lib/linux-x86_64 \
+-Wl,-rpath,${HOME}/epics_env/epics-modules/seq/lib/linux-x86_64 \
+-lseq -lpv -lqsrv -lpvAccessIOC -lpvAccessCA -lpvAccess -lpvData -ldbRecStd -ldbCore -lca -lCom
